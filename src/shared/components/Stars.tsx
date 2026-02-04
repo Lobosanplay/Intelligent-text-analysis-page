@@ -15,7 +15,7 @@ export default function Stars({ numOfStart }: { numOfStart: number }) {
       id: index,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      vx: (Math.random() - 0.5) * 0.3, // Más lento
+      vx: (Math.random() - 0.5) * 0.3,
       vy: (Math.random() - 0.5) * 0.3,
       opacity: 0.3 + Math.random() * 0.7,
     })),
@@ -36,11 +36,9 @@ export default function Stars({ numOfStart }: { numOfStart: number }) {
       const deltaTime = time - lastTimeRef.current;
       lastTimeRef.current = time;
 
-      // Acumular tiempo para cambio de dirección
       directionChangeRef.current += deltaTime;
 
       setStars((prevStars) => {
-        // Cambiar dirección cada 8 segundos
         if (directionChangeRef.current > 8000) {
           directionChangeRef.current = 0;
 
@@ -51,12 +49,10 @@ export default function Stars({ numOfStart }: { numOfStart: number }) {
           }));
         }
 
-        // Actualizar posiciones normalmente
         return prevStars.map((star) => {
-          let newX = star.x + star.vx * (deltaTime / 50); // Más lento
+          let newX = star.x + star.vx * (deltaTime / 50);
           let newY = star.y + star.vy * (deltaTime / 50);
 
-          // Wrap-around cuando salen de la pantalla
           if (newX < -5) newX = 105;
           if (newX > 105) newX = -5;
           if (newY < -5) newY = 105;
@@ -91,10 +87,11 @@ export default function Stars({ numOfStart }: { numOfStart: number }) {
           style={{
             top: `${star.y}vh`,
             left: `${star.x}vw`,
-            opacity: star.opacity,
-            filter: "blur(0.5px)",
+            opacity: star.opacity * 0.8,
+            filter: "blur(1px)",
             transform: `translate(${star.vx * 5}px, ${star.vy * 5}px)`,
             transition: "transform 1s ease, opacity 1s ease",
+            boxShadow: "0 0 8px rgba(255, 255, 255, 0.5)",
           }}
         />
       ))}
