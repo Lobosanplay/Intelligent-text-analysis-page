@@ -1,1 +1,36 @@
 @import "tailwindcss";
+
+@keyframes starMove {
+    0% {
+        transform: translate(var(--current-x, 0), var(--current-y, 0));
+        opacity: 0.5;
+    }
+    25% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+        transform: translate(
+            calc(var(--current-x, 0) + var(--tx)),
+            calc(var(--current-y, 0) + var(--ty))
+        );
+    }
+    75% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(
+            calc(var(--current-x, 0) + calc(var(--tx) * 2)),
+            calc(var(--current-y, 0) + calc(var(--ty) * 2))
+        );
+        opacity: 0.5;
+    }
+}
+
+.star-element {
+    animation: starMove 60s linear infinite;
+    will-change: transform, opacity;
+    transition:
+        --tx 2s ease,
+        --ty 2s ease;
+}
