@@ -1,16 +1,14 @@
+import HeroSection from "./hero/HeroSection";
+
 function App() {
   return (
-    <div className="h-screen bg-gray-500">
-      <div className="flex flex-col justify-center items-center">
-        <h1 className="text-3xl font-bold text-white">
-          Intelligent text analysis
-        </h1>
-        <span className="justify-center mt-3">
-          Intelligent text analysis It is a program that will help you create
-          summaries efficiently and understand their fundamental topics.
-        </span>
-      </div>
-    </div>
+    <main className="relative bg-black text-white overflow-x-hidden">
+      <HeroSection />
+
+      <section className="relative z-10 min-h-screen flex items-center justify-center">
+        <h2 className="text-4xl font-bold">Nueva sección debajo del hero 🚀</h2>
+      </section>
+    </main>
   );
 }
 
