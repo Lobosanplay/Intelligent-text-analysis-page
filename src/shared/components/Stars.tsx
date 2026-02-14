@@ -79,14 +79,14 @@ export default function Stars({ numOfStart }: { numOfStart: number }) {
   }, []);
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute  inset-0 overflow-hidden pointer-events-none">
       {stars.map((star) => (
         <div
           key={star.id}
           className="absolute size-0.5 rounded-full bg-white"
           style={{
-            top: `${star.y}vh`,
-            left: `${star.x}vw`,
+            top: `${star.y}%`,
+            left: `${star.x}%`,
             opacity: star.opacity * 0.8,
             filter: "blur(1px)",
             transform: `translate(${star.vx * 5}px, ${star.vy * 5}px)`,
