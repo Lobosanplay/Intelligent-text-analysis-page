@@ -5,11 +5,12 @@ import { useGSAP } from "@gsap/react";
 export default function HeroContent() {
   const container = useRef(null);
   const title = "Intelligent text analysis";
-
+  const desc =
+    "Intelligent text analysis helps you create summaries efficiently and understand fundamental topics.";
   useGSAP(
     () => {
       gsap.fromTo(
-        ".title-word",
+        ".appearing",
         {
           opacity: 0,
           filter: "blur(20px)",
@@ -35,17 +36,20 @@ export default function HeroContent() {
       ref={container}
       className="relative z-10 min-h-screen overflow-hidden isolate flex flex-col justify-center items-center text-center px-6"
     >
-      <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white">
+      <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white">
         {title.split(" ").map((word, i) => (
-          <span key={i} className="title-word inline-block mr-4 opacity-0">
+          <span key={i} className="appearing inline-block mr-4 opacity-0">
             {word}
           </span>
         ))}
       </h1>
 
-      <p className="mt-6 text-white/80 max-w-xl">
-        Intelligent text analysis helps you create summaries efficiently and
-        understand fundamental topics.
+      <p className="mt-6 text-white/80 max-w-xl text-sm lg:text-xl">
+        {desc.split(" ").map((word, i) => (
+          <span key={i} className="appearing inline-block mr-2 opacity-0">
+            {word}
+          </span>
+        ))}
       </p>
     </section>
   );
