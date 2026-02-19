@@ -6,7 +6,7 @@ export default function FeatureCard({
   desc: string;
 }) {
   return (
-    <div
+    <article
       className="
         group relative
         rounded-2xl
@@ -25,6 +25,6 @@ export default function FeatureCard({
       <p className="text-white/60 text-sm leading-relaxed">{desc}</p>
 
       <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition pointer-events-none bg-linear-to-br from-purple-500/10 to-transparent" />
-    </div>
+    </article>
   );
 }

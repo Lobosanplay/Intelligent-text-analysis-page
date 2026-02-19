@@ -5,8 +5,6 @@ export default function Header() {
   const data = ["Services", "Plans", "About", "Why Us", "FAQs"];
   const [scrolled, setScrolled] = useState(false);
 
-  const borderRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 80);
@@ -14,17 +12,6 @@ export default function Header() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    if (!borderRef.current) return;
-
-    gsap.to(borderRef.current, {
-      rotate: 360,
-      duration: 6,
-      ease: "none",
-      repeat: -1,
-    });
   }, []);
 
   return (
