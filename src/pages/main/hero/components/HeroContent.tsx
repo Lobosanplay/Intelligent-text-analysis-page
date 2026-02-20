@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
+import ButtonLetsStarted from "./ButtonLetsStarted";
 
 export default function HeroContent() {
   const container = useRef(null);
@@ -51,6 +52,8 @@ export default function HeroContent() {
           </span>
         ))}
       </p>
+
+      <ButtonLetsStarted />
     </section>
   );
 }
