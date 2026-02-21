@@ -1,46 +1,96 @@
-import FeatureCard from "./components/FeatureCard";
+import { useRef, useMemo } from "react";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// Temporaly section
+gsap.registerPlugin(ScrollTrigger);
+
 export default function About() {
+  const container = useRef<HTMLDivElement>(null);
+
+  const description =
+    "Intelligent Text Analysis is a SaaS platform designed to transform unstructured content into actionable insights. Upload documents, recordings or videos and instantly obtain summaries, sentiment analysis, topic extraction and structured information ready to use.";
+
+  const lines = useMemo(() => {
+    const words = description.split(" ");
+
+    const pattern = [6, 12, 12, 10, 6];
+
+    const result: string[][] = [];
+    let index = 0;
+
+    for (const size of pattern) {
+      if (index >= words.length) break;
+      result.push(words.slice(index, index + size));
+      index += size;
+    }
+
+    if (index < words.length) {
+      result.splice(Math.floor(result.length / 2), 0, words.slice(index));
+    }
+
+    return result;
+  }, []);
+
+  useGSAP(
+    () => {
+      const chars = gsap.utils.toArray<HTMLElement>(".about-char");
+
+      gsap.fromTo(
+        chars,
+        {
+          opacity: 0.2,
+          color: "#6b7280",
+          textShadow: "0 0 0 rgba(168,85,247,0)",
+        },
+        {
+          opacity: 1,
+          color: "#ffffff",
+          textShadow: "0 0 14px rgba(168,85,247,0.45)",
+          stagger: 0.015,
+          ease: "none",
+          scrollTrigger: {
+            trigger: container.current,
+            start: "top 100%",
+            end: "bottom 100%",
+            scrub: true,
+          },
+        },
+      );
+    },
+    { scope: container },
+  );
+
   return (
-    <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-24 text-center">
-      <div className="max-w-3xl space-y-6">
-        <p className="text-sm tracking-widest text-purple-400 uppercase">
+    <section
+      id="about"
+      ref={container}
+      className="relative z-10 min-h-screen flex items-center justify-center px-6 py-24"
+    >
+      <div className="flex flex-col items-center gap-2 max-w-5xl">
+        <p className="text-sm tracking-widest text-purple-400 uppercase mb-8">
           About the platform
         </p>
 
-        <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
-          Intelligent analysis for text, audio and video content
-        </h2>
-
-        <p className="text-white/70 text-lg leading-relaxed">
-          Intelligent Text Analysis is a SaaS platform designed to transform
-          unstructured content into actionable insights. Upload documents,
-          recordings or videos and instantly obtain summaries, sentiment
-          analysis, topic extraction and structured information ready to use.
-        </p>
-      </div>
-
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl w-full">
-        <FeatureCard
-          title="Automatic Summaries"
-          desc="Generate concise summaries from long documents, meetings or multimedia content in seconds."
-        />
-
-        <FeatureCard
-          title="Sentiment Analysis"
-          desc="Understand emotional tone and contextual meaning across conversations, reviews or reports."
-        />
-
-        <FeatureCard
-          title="Topic Extraction"
-          desc="Identify key themes and important concepts automatically using advanced NLP models."
-        />
-
-        <FeatureCard
-          title="Scalable Insights"
-          desc="Build dashboards, compare files and unlock deeper analytics as new features evolve."
-        />
+        <div className="flex flex-col items-center leading-10 text-3xl md:text-4xl font-bold text-center">
+          {lines.map((line, lineIndex) => (
+            <div
+              key={lineIndex}
+              className="flex flex-wrap justify-center gap-x-2"
+            >
+              {line.map((word, i) => (
+                <span key={i} className="flex">
+                  {word.split("").map((char, j) => (
+                    <span key={j} className="about-char whitespace-pre">
+                      {char}
+                    </span>
+                  ))}
+                  <span className="about-char whitespace-pre"> </span>
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
