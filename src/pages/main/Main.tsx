@@ -1,6 +1,7 @@
-import HeroSection from "./hero/HeroSection";
+import HeroSection from "./heroSection/HeroSection";
 import Header from "../../shared/components/Header";
-import About from "./about/About";
+import About from "./aboutSection/AboutSection";
+import Services from "./serviceSection/ServicesSetion";
 export default function Main() {
   return (
     <div>
@@ -8,6 +9,7 @@ export default function Main() {
       <HeroSection />
 
       <About />
+      <Services />
     </div>
   );
 }
