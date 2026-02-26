@@ -51,7 +51,7 @@ export default function About() {
           ease: "none",
           scrollTrigger: {
             trigger: container.current,
-            start: "top 100%",
+            start: "top 40%",
             end: "bottom 100%",
             scrub: true,
           },
