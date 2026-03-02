@@ -4,7 +4,7 @@ export default function Services() {
   return (
     <section
       id="services"
-      className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-28"
+      className="relative bg-black z-10 min-h-screen flex flex-col items-center justify-center px-6 py-28"
     >
       <div className="max-w-7xl w-full flex flex-col items-center text-center space-y-6">
         <p className="text-sm tracking-widest text-purple-400 uppercase">

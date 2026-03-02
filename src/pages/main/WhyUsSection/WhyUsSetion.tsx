@@ -24,12 +24,7 @@ export default function WhyUsSection() {
   return (
     <section
       id="why-us"
-      className="
-        relative z-10
-        min-h-screen
-        flex flex-col items-center justify-center
-        px-6 py-28
-      "
+      className="relative bg-black z-10 min-h-screen flex flex-col items-center justify-center px-6 py-28"
     >
       <div className="text-center max-w-2xl">
         <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">

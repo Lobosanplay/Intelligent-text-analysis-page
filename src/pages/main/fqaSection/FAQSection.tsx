@@ -37,7 +37,7 @@ export default function FAQSection() {
   return (
     <section
       id="faqs"
-      className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-28"
+      className="relative bg-black z-10 min-h-screen flex flex-col items-center justify-center px-6 py-28"
     >
       <h2 className="text-4xl md:text-5xl font-bold text-white text-center">
         Frequently Asked Questions

@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
+import { Link } from "react-router-dom";
 
 export default function ButtonLetsStarted() {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -111,7 +112,9 @@ export default function ButtonLetsStarted() {
 
         <div className="absolute inset-[1.5px] rounded-full bg-black/60 backdrop-blur-sm" />
 
-        <span className="relative z-10">Let's Started</span>
+        <Link to="/login" className="relative z-10">
+          Let's Started
+        </Link>
       </button>
     </div>
   );
