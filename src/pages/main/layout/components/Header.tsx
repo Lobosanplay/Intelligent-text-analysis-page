@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   const data = ["Services", "Plans", "About", "Why Us", "FAQs"];
@@ -207,9 +208,12 @@ function NeonButton() {
         }}
       />
 
-      <span className="relative block bg-black text-white font-bold px-6 py-2 rounded-full hover:bg-neutral-900 transition">
+      <Link
+        to="/login"
+        className="relative block bg-black text-white font-bold px-6 py-2 rounded-full hover:bg-neutral-900 transition"
+      >
         Lets Started
-      </span>
+      </Link>
     </button>
   );
 }

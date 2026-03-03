@@ -65,7 +65,7 @@ export default function About() {
     <section
       id="about"
       ref={container}
-      className="relative z-10 min-h-screen flex items-center justify-center px-6 py-24"
+      className="relative bg-black z-10 min-h-screen flex items-center justify-center px-6 py-24"
     >
       <div className="flex flex-col items-center gap-2 max-w-5xl">
         <p className="text-sm tracking-widest text-purple-400 uppercase mb-8">
