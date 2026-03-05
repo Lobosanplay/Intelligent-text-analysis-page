@@ -2,10 +2,19 @@ import supabase from "../../../config/supabase/supabase";
 import type { AuthResponse } from "../../types/auth.types";
 
 class AuthService {
-  async signUp(email: string, password: string): Promise<AuthResponse> {
+  async signUp(
+    email: string,
+    password: string,
+    username: string,
+  ): Promise<AuthResponse> {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          username: username,
+        },
+      },
     });
 
     if (error) throw error;

@@ -1,6 +1,44 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import z from "zod";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { useAuth } from "../../../shared/hooks/useAuth";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const loginFormSchema = z.object({
+  email: z.email(),
+  password: z.string().min(8),
+});
+
+type loginFormFields = z.infer<typeof loginFormSchema>;
 
 export default function Login() {
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
+  const {
+    register,
+    setError,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<loginFormFields>({
+    resolver: zodResolver(loginFormSchema),
+  });
+
+  const onSubmit: SubmitHandler<loginFormFields> = async ({
+    email,
+    password,
+  }) => {
+    try {
+      await signIn(navigate, email, password);
+    } catch (error) {
+      setError("password", {
+        message:
+          error instanceof Error
+            ? error.message
+            : "Algo salio mal, revisa las credenciales",
+      });
+    }
+  };
+
   return (
     <section className="min-h-screen bg-black flex items-center justify-center">
       <Link
@@ -19,18 +57,25 @@ export default function Login() {
           </p>
         </div>
 
-        <form className="flex flex-col gap-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
           <input
             type="text"
-            placeholder="Username or email"
+            {...register("email")}
+            placeholder="email"
             className="w-full p-2 bg-neutral-800 text-white rounded-md border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-white/20 transition"
           />
 
           <input
             type="password"
+            {...register("password")}
             placeholder="Password"
             className="w-full p-2 bg-neutral-800 text-white rounded-md border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-white/20 transition"
           />
+          {errors.password && (
+            <div className="text-red-300 text-sm mt-2 font-medium bg-black px-3 py-2 rounded-sm border border-red-500">
+              {errors.password.message}
+            </div>
+          )}
           <button
             type="submit"
             className="mt-1 w-full bg-purple-900/60 text-white font-semibold py-2 rounded-md hover:bg-purple-900 transition"
