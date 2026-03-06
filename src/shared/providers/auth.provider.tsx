@@ -7,7 +7,7 @@ import { AuthContext } from "../contexts/auth.context";
 
 export const AuthContextProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
-  const [userName, setUserName] = useState<string>("User");
+  const [username, setUsername] = useState<string>("User");
   const [session, setSession] = useState<Session | null>(null);
   const [current_period_end, setCurrent_period_end] = useState<string | null>(
     null,
@@ -33,13 +33,14 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
     const { data: subscriptionData, error } = await supabase
       .from("subscriptions")
       .select("*")
+      .eq("user_id", user.id)
       .single();
 
     if (error) throw new Error("No se pudo obtener la suscripción Error");
     if (!subscriptionData) throw new Error("No se pudo obtener la suscripción");
 
     setUser(user);
-    setUserName(subscriptionData.username);
+    setUsername(subscriptionData.username);
     setStatus(subscriptionData.status);
     setPlan_id(subscriptionData.plan_id);
     setCurrent_period_end(subscriptionData.current_period_end);
@@ -71,9 +72,8 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
     await authService.signOut();
 
     setUser(null);
-    setUserName("User");
+    setUsername("User");
     setSession(null);
-
     navigate("/", { replace: true });
   };
 
@@ -85,7 +85,7 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
         signIn,
         signUp,
         signOut,
-        userName,
+        username,
         current_period_end,
         status,
         plan_id,
