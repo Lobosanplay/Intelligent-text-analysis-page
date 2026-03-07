@@ -10,7 +10,7 @@ export interface AuthResponse {
 export interface AuthContextType {
   user: User | null;
   session: Session | null;
-  userName: string;
+  username: string;
   current_period_end: string | null;
   status: string;
   plan_id: string;

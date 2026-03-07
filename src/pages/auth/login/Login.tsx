@@ -3,6 +3,7 @@ import z from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 
 const loginFormSchema = z.object({
   email: z.email(),
@@ -14,6 +15,8 @@ type loginFormFields = z.infer<typeof loginFormSchema>;
 export default function Login() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
   const {
     register,
     setError,
@@ -27,6 +30,8 @@ export default function Login() {
     email,
     password,
   }) => {
+    if (isLoading) return;
+    setIsLoading(true);
     try {
       await signIn(navigate, email, password);
     } catch (error) {
@@ -36,6 +41,8 @@ export default function Login() {
             ? error.message
             : "Algo salio mal, revisa las credenciales",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -77,10 +84,11 @@ export default function Login() {
             </div>
           )}
           <button
+            disabled={isLoading}
             type="submit"
-            className="mt-1 w-full bg-purple-900/60 text-white font-semibold py-2 rounded-md hover:bg-purple-900 transition"
+            className={`${isLoading ? "cursor-not-allowed" : "cursor-pointer"}  mt-1 w-full bg-purple-900/60 text-white font-semibold py-2 rounded-md hover:bg-purple-900 transition`}
           >
-            Login
+            {isLoading ? "Validando..." : "Login"}
           </button>
         </form>
 

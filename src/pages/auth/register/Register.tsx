@@ -119,9 +119,9 @@ export default function Register() {
           <button
             disabled={isLoading}
             type="submit"
-            className="mt-1 w-full bg-purple-900/60 text-white font-semibold py-2 rounded-md hover:bg-purple-900 transition"
+            className={`${isLoading ? "cursor-not-allowed" : "cursor-pointer"}  mt-1 w-full bg-purple-900/60 text-white font-semibold py-2 rounded-md hover:bg-purple-900 transition`}
           >
-            Create account
+            {isLoading ? "Validando..." : "Create account"}
           </button>
         </form>
 

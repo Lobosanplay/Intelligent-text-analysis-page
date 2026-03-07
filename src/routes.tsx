@@ -1,6 +1,10 @@
 import Login from "./pages/auth/login/Login";
 import Register from "./pages/auth/register/Register";
+import ChatPage from "./pages/chat/ChatPage";
+import DashboardLayout from "./pages/dashboard/components/layout/DashboardLayout";
+import DashboardHome from "./pages/dashboard/DashboardHome";
 import Main from "./pages/main/Main";
+import ProtectedRoutes from "./shared/components/ProtedRoutes";
 
 const routes = [
   {
@@ -14,6 +18,29 @@ const routes = [
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    element: <ProtectedRoutes />,
+    children: [
+      {
+        path: "/dashboard",
+        element: <DashboardLayout />,
+        children: [
+          {
+            index: true,
+            element: <DashboardHome />,
+          },
+          {
+            path: "new-chat",
+            element: <ChatPage />,
+          },
+          {
+            path: "folders",
+            element: <div>Folders</div>,
+          },
+        ],
+      },
+    ],
   },
 ];
 
