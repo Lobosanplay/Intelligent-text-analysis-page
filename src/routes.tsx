@@ -12,12 +12,17 @@ const routes = [
     element: <Main />,
   },
   {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/register",
-    element: <Register />,
+    path: "/auth",
+    children: [
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "register",
+        element: <Register />,
+      },
+    ],
   },
   {
     element: <ProtectedRoutes />,
@@ -31,8 +36,11 @@ const routes = [
             element: <DashboardHome />,
           },
           {
-            path: "new-chat",
-            element: <ChatPage />,
+            path: "chat",
+            children: [
+              { path: "new", element: <ChatPage /> },
+              { path: ":chatId", element: <ChatPage /> },
+            ],
           },
           {
             path: "folders",

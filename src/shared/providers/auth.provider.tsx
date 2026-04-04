@@ -65,7 +65,7 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
 
     if (!user) throw new Error("No se pudo crear el usuario");
 
-    navigate("/login", { replace: true });
+    navigate("/auth/login", { replace: true });
   };
 
   const signOut = async (navigate: NavigateFunction) => {

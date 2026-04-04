@@ -1,7 +1,7 @@
-import type { Message } from "../../../shared/types/chat.types";
+import type { SB_MessagesModel } from "../../../shared/models/messages/messages.model";
 
 type Props = {
-  message: Message;
+  message: SB_MessagesModel;
 };
 
 export default function MessageBubble({ message }: Props) {

@@ -112,7 +112,7 @@ export default function ButtonLetsStarted() {
 
         <div className="absolute inset-[1.5px] rounded-full bg-black/60 backdrop-blur-sm" />
 
-        <Link to="/login" className="relative z-10">
+        <Link to="/auth/login" className="relative z-10">
           Let's Started
         </Link>
       </button>
