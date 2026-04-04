@@ -209,7 +209,7 @@ function NeonButton() {
       />
 
       <Link
-        to="/login"
+        to="/auth/login"
         className="relative block bg-black text-white font-bold px-6 py-2 rounded-full hover:bg-neutral-900 transition"
       >
         Lets Started

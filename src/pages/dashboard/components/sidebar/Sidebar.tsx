@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   Search,
@@ -10,11 +10,27 @@ import {
 import { useState } from "react";
 import { useAuth } from "../../../../shared/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { chatService } from "../../../../shared/services/chat/chatService";
+import type { SB_ConversationsModel } from "../../../../shared/models/conversations/conversations.model";
 
 export default function Sidebar() {
   const [openMenu, setOpenMenu] = useState(false);
-  const { username, signOut, plan_id } = useAuth();
+  const { username, signOut, plan_id, user } = useAuth();
   const navigate = useNavigate();
+  const [chatHistory, setChatHistory] = useState<SB_ConversationsModel[]>([]);
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      const chats = await chatService.fetchConversationServiceByUserId(
+        user?.id || "",
+      );
+      setChatHistory(chats);
+    };
+
+    fetchChats();
+  }, [user?.id]);
+
   return (
     <aside className="w-64 h-screen border-r border-neutral-800 flex flex-col">
       <div className="p-6 border-b border-neutral-800">
@@ -38,7 +54,7 @@ export default function Sidebar() {
         </NavLink>
 
         <NavLink
-          to="/dashboard/new-chat"
+          to="/dashboard/chat/new"
           className={({ isActive }) =>
             `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
               isActive
@@ -75,25 +91,15 @@ export default function Sidebar() {
         <h3 className="text-sm text-neutral-500 mb-2 px-2">Chat History</h3>
 
         <div className="flex flex-col gap-1 overflow-y-auto max-h-full pr-1">
-          <button className="text-left text-sm text-neutral-400 hover:bg-neutral-900 px-3 py-2 rounded-md">
-            Marketing analysis
-          </button>
-
-          <button className="text-left text-sm text-neutral-400 hover:bg-neutral-900 px-3 py-2 rounded-md">
-            Customer feedback summary
-          </button>
-
-          <button className="text-left text-sm text-neutral-400 hover:bg-neutral-900 px-3 py-2 rounded-md">
-            Video transcript insights
-          </button>
-
-          <button className="text-left text-sm text-neutral-400 hover:bg-neutral-900 px-3 py-2 rounded-md">
-            Meeting notes summary
-          </button>
-
-          <button className="text-left text-sm text-neutral-400 hover:bg-neutral-900 px-3 py-2 rounded-md">
-            Product review analysis
-          </button>
+          {chatHistory.map((chat, i) => (
+            <Link
+              className="text-left text-sm text-neutral-400 hover:bg-neutral-900 px-3 py-2 rounded-md"
+              key={i}
+              to={`chat/${chat.id}`}
+            >
+              {chat.title}
+            </Link>
+          ))}
         </div>
       </div>
 
