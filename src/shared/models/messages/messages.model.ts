@@ -6,3 +6,9 @@ export interface SB_MessagesModel {
   created_at: string;
   document_id: string;
 }
+
+export interface ResponseNewChatModel {
+  message_id: string;
+  status: string;
+  message: SB_MessagesModel;
+}

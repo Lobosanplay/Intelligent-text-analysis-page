@@ -1,14 +1,18 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../sidebar/Sidebar";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export default function DashboardLayout() {
+  const queryClient = new QueryClient();
   return (
     <div className="flex h-screen bg-black text-white">
-      <Sidebar />
+      <QueryClientProvider client={queryClient}>
+        <Sidebar />
 
-      <main className="flex-1 flex flex-col">
-        <Outlet />
-      </main>
+        <main className="flex-1 flex flex-col">
+          <Outlet />
+        </main>
+      </QueryClientProvider>
     </div>
   );
 }
