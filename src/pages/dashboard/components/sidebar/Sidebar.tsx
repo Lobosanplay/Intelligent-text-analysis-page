@@ -10,26 +10,19 @@ import {
 import { useState } from "react";
 import { useAuth } from "../../../../shared/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { chatService } from "../../../../shared/services/chat/chatService";
-import type { SB_ConversationsModel } from "../../../../shared/models/conversations/conversations.model";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Sidebar() {
   const [openMenu, setOpenMenu] = useState(false);
   const { username, signOut, plan_id, user } = useAuth();
   const navigate = useNavigate();
-  const [chatHistory, setChatHistory] = useState<SB_ConversationsModel[]>([]);
 
-  useEffect(() => {
-    const fetchChats = async () => {
-      const chats = await chatService.fetchConversationServiceByUserId(
-        user?.id || "",
-      );
-      setChatHistory(chats);
-    };
-
-    fetchChats();
-  }, [user?.id]);
+  const { data = [], isLoading } = useQuery({
+    queryFn: async () =>
+      await chatService.fetchConversationServiceByUserId(user?.id || ""),
+    queryKey: ["chats"],
+  });
 
   return (
     <aside className="w-64 h-screen border-r border-neutral-800 flex flex-col">
@@ -90,17 +83,21 @@ export default function Sidebar() {
       <div className="flex-1 px-4 overflow-hidden">
         <h3 className="text-sm text-neutral-500 mb-2 px-2">Chat History</h3>
 
-        <div className="flex flex-col gap-1 overflow-y-auto max-h-full pr-1">
-          {chatHistory.map((chat, i) => (
-            <Link
-              className="text-left text-sm text-neutral-400 hover:bg-neutral-900 px-3 py-2 rounded-md"
-              key={i}
-              to={`chat/${chat.id}`}
-            >
-              {chat.title}
-            </Link>
-          ))}
-        </div>
+        {isLoading ? (
+          <span>Loading...</span>
+        ) : (
+          <div className="flex flex-col gap-1 overflow-y-auto max-h-full pr-1">
+            {data.map((chat, i) => (
+              <Link
+                className="text-left text-sm text-neutral-400 hover:bg-neutral-900 px-3 py-2 rounded-md"
+                key={i}
+                to={`chat/${chat.id}`}
+              >
+                {chat.title}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className=" p-2  border-t border-neutral-800 relative">

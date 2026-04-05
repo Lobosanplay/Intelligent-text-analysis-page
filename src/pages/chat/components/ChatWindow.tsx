@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
 import MessageBubble from "./MessageBubble";
 import { useParams } from "react-router-dom";
@@ -6,44 +6,59 @@ import {
   chatService,
   type CreateMessage,
 } from "../../../shared/services/chat/chatService";
-import type { SB_MessagesModel } from "../../../shared/models/messages/messages.model";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function ChatWindow() {
   const { chatId } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const isNewChat = chatId === undefined;
 
-  const [messages, setMessages] = useState<SB_MessagesModel[]>([]);
+  const { data: messages = [] } = useQuery({
+    queryFn: async () => await chatService.fetchConversationById(chatId || ""),
+    queryKey: ["messages", chatId],
+    enabled: !!chatId,
+  });
 
-  useEffect(() => {
-    const fetchChatMessages = async () => {
-      if (chatId) {
-        const messages = await chatService.fetchConversationById(chatId);
-        setMessages(messages);
-      }
-    };
+  const { mutateAsync: createChatMutation } = useMutation({
+    mutationFn: (data: CreateMessage) => chatService.createChatService(data),
 
-    fetchChatMessages();
-  }, [chatId]);
+    onSuccess: (newMessage) => {
+      const newChatId = newMessage.message.conversation_id;
 
-  const bottomRef = useRef<HTMLDivElement | null>(null);
+      queryClient.invalidateQueries({ queryKey: ["chats"] });
+
+      navigate(`/dashboard/chat/${newChatId}`);
+    },
+  });
+
+  const { mutateAsync: sendMessageMutation } = useMutation({
+    mutationFn: ({ data, chatId }: { data: CreateMessage; chatId: string }) =>
+      chatService.sendMessage(data, chatId),
+
+    onSuccess: (newMessage, variables) => {
+      queryClient.setQueryData(
+        ["messages", variables.chatId],
+        (old: any[] = []) => [...old, newMessage],
+      );
+    },
+  });
 
   const sendMessage = async (data: CreateMessage) => {
     if (isNewChat) {
-      const newMessage = await chatService.createChatService(data);
-
-      const newChatId = newMessage.conversation_id;
-
-      navigate(`/dashboard/chat/${newChatId}`);
+      await createChatMutation(data);
       return;
     }
 
-    const userMessage = await chatService.sendMessage(data, chatId);
-
-    setMessages((prev) => [...prev, userMessage]);
+    await sendMessageMutation({
+      data,
+      chatId: chatId!,
+    });
   };
+
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

@@ -46,6 +46,8 @@ export default function ChatInput({ onSend }: Props) {
     if (!data) return;
 
     onSend({ ...data, user_id: user?.id || "" });
+    setFilePreview(null);
+    reset();
   };
 
   return (

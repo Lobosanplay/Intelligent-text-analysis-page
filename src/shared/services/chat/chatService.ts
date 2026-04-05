@@ -1,5 +1,8 @@
 import type { SB_ConversationsModel } from "../../models/conversations/conversations.model";
-import type { SB_MessagesModel } from "../../models/messages/messages.model";
+import type {
+  ResponseNewChatModel,
+  SB_MessagesModel,
+} from "../../models/messages/messages.model";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -54,13 +57,12 @@ class ChatServices {
     }
   }
 
-  async createChatService(data: CreateMessage): Promise<SB_MessagesModel> {
+  async createChatService(data: CreateMessage): Promise<ResponseNewChatModel> {
     try {
       const formData = new FormData();
       formData.append("user_id", data.user_id);
       formData.append("file", data.file);
       formData.append("content", data.content || "");
-      console.log(data.user_id);
       const response = await fetch(`${API_URL}/chat/new`, {
         method: "POST",
         body: formData,
@@ -71,6 +73,7 @@ class ChatServices {
       }
 
       const json = await response.json();
+      console.log(json);
       return json;
     } catch (error) {
       console.error("Error generating create conversations:", error);
