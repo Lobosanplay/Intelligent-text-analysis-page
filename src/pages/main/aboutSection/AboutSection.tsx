@@ -9,7 +9,7 @@ export default function About() {
   const container = useRef<HTMLDivElement>(null);
 
   const description =
-    "Intelligent Text Analysis is a SaaS platform designed to transform unstructured content into actionable insights. Upload documents, recordings or videos and instantly obtain summaries, sentiment analysis, topic extraction and structured information ready to use.";
+    "MultiSense AI is a SaaS platform designed to transform unstructured content into actionable insights. Upload documents, recordings or videos and instantly obtain summaries, sentiment analysis, topic extraction and structured information ready to use.";
 
   const lines = useMemo(() => {
     const words = description.split(" ");

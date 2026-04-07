@@ -1,7 +1,10 @@
 import type { SB_ConversationsModel } from "../../models/conversations/conversations.model";
+import { mapMessageFromAPI } from "../../models/messages/mappers/message.mapper";
 import type {
   ResponseNewChatModel,
   SB_MessagesModel,
+  Message,
+  MessageAPIResponse,
 } from "../../models/messages/messages.model";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -36,7 +39,7 @@ class ChatServices {
     }
   }
 
-  async fetchConversationById(id: string): Promise<SB_MessagesModel[]> {
+  async fetchConversationById(id: string): Promise<Message[]> {
     try {
       const response = await fetch(`${API_URL}/chat/${id}`, {
         method: "GET",
@@ -49,8 +52,8 @@ class ChatServices {
         throw new Error("Error fetching conversations");
       }
 
-      const data = await response.json();
-      return data;
+      const data: MessageAPIResponse[] = await response.json();
+      return data.map(mapMessageFromAPI);
     } catch (error) {
       console.error("Error fetching conversations:", error);
       throw error;
