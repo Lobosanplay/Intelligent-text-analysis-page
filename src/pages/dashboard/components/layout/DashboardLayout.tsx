@@ -9,7 +9,7 @@ export default function DashboardLayout() {
       <QueryClientProvider client={queryClient}>
         <Sidebar />
 
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </QueryClientProvider>

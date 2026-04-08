@@ -24,14 +24,59 @@ class DocumentsService {
     return data as SB_DocumentModel;
   }
 
-  async getUserDocuments() {
+  async getUserDocuments(userId: string) {
     const { data, error } = await supabase
       .from("documents")
       .select("*")
+      .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
     return data as SB_DocumentModel[];
+  }
+
+  async getRecentDocuments(userId: string, limit = 5) {
+    const { data, error } = await supabase
+      .from("documents")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    return data;
+  }
+
+  async getUploadsPerDay(userId: string) {
+    const { data, error } = await supabase.rpc("documents_uploaded_per_day", {
+      p_user_id: userId,
+    });
+
+    if (error) throw error;
+
+    return data;
+  }
+
+  async getDocumentsByType(userId: string) {
+    const { data, error } = await supabase.rpc("documents_by_type", {
+      p_user_id: userId,
+    });
+
+    if (error) throw error;
+
+    return data;
+  }
+
+  async getDocumentsLastDays(userId: string, limint: number = 7) {
+    const { data, error } = await supabase.rpc("documents_last_days", {
+      p_user_id: userId,
+      p_days: limint,
+    });
+
+    if (error) throw error;
+
+    return data;
   }
 
   async updateStatus(id: string, status: string) {
