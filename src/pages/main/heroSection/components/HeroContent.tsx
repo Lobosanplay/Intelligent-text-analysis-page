@@ -5,9 +5,9 @@ import ButtonLetsStarted from "./ButtonLetsStarted";
 
 export default function HeroContent() {
   const container = useRef(null);
-  const title = "Intelligent text analysis";
+  const title = "MultiSense AI";
   const desc =
-    "Intelligent text analysis helps you create summaries efficiently and understand fundamental topics.";
+    "MultiSense AI helps you create summaries efficiently and understand fundamental topics.";
   useGSAP(
     () => {
       gsap.fromTo(
