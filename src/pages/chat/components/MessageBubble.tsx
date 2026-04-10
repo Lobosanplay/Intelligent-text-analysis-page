@@ -25,8 +25,10 @@ export default function MessageBubble({ message }: Props) {
   return (
     <div className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[70%] px-4 py-3 rounded-lg text-sm text-start space-y-2 ${
-          isUser ? "bg-blue-600 text-white" : "bg-neutral-800 text-neutral-200"
+        className={`px-4 py-3 rounded-lg text-sm text-start space-y-2 ${
+          isUser
+            ? "max-w-[70%] bg-blue-600 text-white"
+            : "w-full bg-neutral-800 text-neutral-200"
         }`}
       >
         {isUser && (

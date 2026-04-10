@@ -1,4 +1,4 @@
-import { Send } from "lucide-react";
+import { Send, File } from "lucide-react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "../../../shared/hooks/useAuth";
@@ -51,53 +51,54 @@ export default function ChatInput({ onSend }: Props) {
   };
 
   return (
-    <div className="p-4 border-t border-neutral-800">
-      <div className="relative flex items-center">
-        <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
-          {filePreview && (
-            <div className="flex w-40 h-40 items-center justify-between bg-neutral-800 mb-4 p-2 rounded-xl">
-              <span className="text-sm">{filePreview.name}</span>
-              <button
-                type="button"
-                onClick={handleRemoveFile}
-                className="text-red-400"
-              >
-                X
-              </button>
-            </div>
-          )}
-          {!filePreview ? (
-            <>
-              <input
-                type="file"
-                onChange={handleFileChange}
-                className="w-full bg-neutral-900 border border-neutral-700 rounded px-4 py-2"
-              />
+    <div className="p-4 flex justify-center backdrop-blur-md">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 px-4">
+        <div className="relative flex items-center">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="w-200 bg-neutral-900 border border-neutral-700 rounded-2xl p-2 shadow-lg">
+              {filePreview && (
+                <div className="flex items-center justify-between px-3 py-2 mb-2 bg-neutral-800/50 rounded-xl">
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <File size={16} className="text-neutral-400" />
+                    <span className="text-sm truncate">{filePreview.name}</span>
+                  </div>
 
-              {errors.file && (
-                <span className="text-red-500 text-sm">
-                  {errors.file.message}
-                </span>
+                  <button
+                    type="button"
+                    onClick={handleRemoveFile}
+                    className="text-red-400 text-sm"
+                  >
+                    ✕
+                  </button>
+                </div>
               )}
-            </>
-          ) : (
-            <div className="relative">
-              <input
-                type="text"
-                {...register("content")}
-                placeholder="Escribe algo sobre el archivo..."
-                className="w-full bg-neutral-900 border border-neutral-700 rounded-full px-4 pr-12 py-2"
-              />
 
-              <button
-                type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2"
-              >
-                <Send size={16} />
-              </button>
+              {!filePreview ? (
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  className="w-full bg-transparent text-sm px-3 py-2"
+                />
+              ) : (
+                <div className="relative">
+                  <input
+                    type="text"
+                    {...register("content")}
+                    placeholder="Escribe algo sobre el archivo..."
+                    className="w-full bg-transparent outline-none px-4 pr-12 py-2 text-sm"
+                  />
+
+                  <button
+                    type="submit"
+                    className="absolute right-2 top-1/2 -translate-y-1/2"
+                  >
+                    <Send size={16} />
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
