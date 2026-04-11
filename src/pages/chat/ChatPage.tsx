@@ -2,7 +2,7 @@ import ChatWindow from "./components/ChatWindow";
 
 export default function ChatPage() {
   return (
-    <div className="flex flex-col h-full">
+    <div className="h-screen w-auto">
       <ChatWindow />
     </div>
   );

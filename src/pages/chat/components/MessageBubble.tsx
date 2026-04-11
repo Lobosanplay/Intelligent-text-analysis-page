@@ -23,9 +23,9 @@ export default function MessageBubble({ message }: Props) {
   const document = message.document;
 
   return (
-    <div className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`px-4 py-3 rounded-lg text-sm text-start space-y-2 ${
+        className={`px-4 py-3 rounded-lg text-sm text-start ${
           isUser
             ? "max-w-[70%] bg-blue-600 text-white"
             : "w-full bg-neutral-800 text-neutral-200"

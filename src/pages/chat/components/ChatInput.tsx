@@ -51,54 +51,52 @@ export default function ChatInput({ onSend }: Props) {
   };
 
   return (
-    <div className="p-4 flex justify-center backdrop-blur-md">
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 px-4">
-        <div className="relative flex items-center">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="w-200 bg-neutral-900 border border-neutral-700 rounded-2xl p-2 shadow-lg">
-              {filePreview && (
-                <div className="flex items-center justify-between px-3 py-2 mb-2 bg-neutral-800/50 rounded-xl">
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <File size={16} className="text-neutral-400" />
-                    <span className="text-sm truncate">{filePreview.name}</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleRemoveFile}
-                    className="text-red-400 text-sm"
-                  >
-                    ✕
-                  </button>
+    <div className="flex flex-col backdrop-blur-md">
+      <div className="fixed w-full max-w-3xl left-1/2 -translate-1/2 bottom-0 px-4 lg:px-0">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="w-full bg-neutral-900 border border-neutral-700 rounded-2xl p-2 shadow-lg">
+            {filePreview && (
+              <div className="flex items-center justify-between px-3 py-2 mb-2 bg-neutral-800/50 rounded-xl">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <File size={16} className="text-neutral-400" />
+                  <span className="text-sm truncate">{filePreview.name}</span>
                 </div>
-              )}
 
-              {!filePreview ? (
+                <button
+                  type="button"
+                  onClick={handleRemoveFile}
+                  className="text-red-400 text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {!filePreview ? (
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="w-full bg-transparent text-sm px-4 py-2"
+              />
+            ) : (
+              <div className="relative">
                 <input
-                  type="file"
-                  onChange={handleFileChange}
-                  className="w-full bg-transparent text-sm px-3 py-2"
+                  type="text"
+                  {...register("content")}
+                  placeholder="Escribe algo..."
+                  className="w-full bg-transparent outline-none px-4 pr-12 py-2 text-sm"
                 />
-              ) : (
-                <div className="relative">
-                  <input
-                    type="text"
-                    {...register("content")}
-                    placeholder="Escribe algo sobre el archivo..."
-                    className="w-full bg-transparent outline-none px-4 pr-12 py-2 text-sm"
-                  />
 
-                  <button
-                    type="submit"
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                  >
-                    <Send size={16} />
-                  </button>
-                </div>
-              )}
-            </div>
-          </form>
-        </div>
+                <button
+                  type="submit"
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                >
+                  <Send size={16} />
+                </button>
+              </div>
+            )}
+          </div>
+        </form>
       </div>
     </div>
   );

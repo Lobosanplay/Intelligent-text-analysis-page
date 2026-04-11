@@ -84,12 +84,14 @@ export default function ChatWindow() {
           </div>
         </div>
       ) : (
-        <div className="absolute top-55">
+        <div className="absolute top-40 lg:top-45 ">
           <h3 className="text-3xl text-white">How can I help, {username}?</h3>
         </div>
       )}
 
-      <ChatInput onSend={sendMessage} />
+      <div className="relative w-full">
+        <ChatInput onSend={sendMessage} />
+      </div>
     </div>
   );
 }
