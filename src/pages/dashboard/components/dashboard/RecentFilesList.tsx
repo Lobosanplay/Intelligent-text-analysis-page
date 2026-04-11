@@ -13,10 +13,10 @@ export default function RecentFilesList() {
   if (error) return <div>Error loading files</div>;
 
   return (
-    <div className="bg-neutral-900 p-5 rounded-xl border border-neutral-800 h-full">
+    <div className="bg-neutral-900 p-5 rounded-xl border border-neutral-800 h-95 flex flex-col">
       <h2 className="text-lg font-semibold mb-4">Recent Files</h2>
 
-      <div className="space-y-3">
+      <div className="flex-1 overflow-y-auto space-y-3 pr-1">
         {files.length === 0 && (
           <p className="text-sm text-neutral-400">No files uploaded yet</p>
         )}
