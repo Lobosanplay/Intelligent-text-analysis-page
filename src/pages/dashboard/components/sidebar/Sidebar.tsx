@@ -114,24 +114,28 @@ export default function Sidebar({
       </nav>
 
       {showLabels && (
-        <div className="flex-1 px-4 overflow-hidden">
+        <div className="flex-1 px-4 overflow-hidden flex flex-col">
           <h3 className="text-sm text-neutral-500 mb-2 px-2">Chat History</h3>
 
-          {isLoading ? (
-            <span className="px-4">Loading...</span>
-          ) : (
-            <div className="flex flex-col gap-1 overflow-y-auto max-h-full pr-1">
-              {data.map((chat, i) => (
-                <Link
-                  className="text-left text-sm text-neutral-400 hover:bg-neutral-900 px-3 py-2 rounded-md"
-                  key={i}
-                  to={`chat/${chat.id}`}
-                >
-                  {chat.title}
-                </Link>
-              ))}
-            </div>
-          )}
+          <div className="flex-1 overflow-y-auto pr-1 relative">
+            {isLoading ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-6 h-6 border-2 border-neutral-500 border-t-white rounded-full animate-spin" />
+              </div>
+            ) : (
+              <div className="flex flex-col gap-1 transition-opacity duration-300 opacity-100">
+                {data.map((chat) => (
+                  <Link
+                    key={chat.id}
+                    to={`chat/${chat.id}`}
+                    className="text-left text-sm text-neutral-400 hover:bg-neutral-900 px-3 py-2 rounded-md"
+                  >
+                    {chat.title}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 

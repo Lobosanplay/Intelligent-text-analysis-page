@@ -22,6 +22,16 @@ export default function MessageBubble({ message }: Props) {
   const analysis = message.analysis;
   const document = message.document;
 
+  if ((message as any).thinking) {
+    return (
+      <div className="flex justify-start">
+        <div className="bg-neutral-800 px-4 py-3 rounded-lg">
+          <TypingDots />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
@@ -45,6 +55,8 @@ export default function MessageBubble({ message }: Props) {
             {message.content && <p>{message.content}</p>}
           </div>
         )}
+
+        {!analysis && !isUser && <span>{message.content}</span>}
 
         {!isUser && analysis && document && (
           <div className="space-y-2 pt-2 text-xs">
@@ -128,6 +140,16 @@ export default function MessageBubble({ message }: Props) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function TypingDots() {
+  return (
+    <div className="flex gap-1">
+      <span className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce [animation-delay:0ms]" />
+      <span className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce [animation-delay:150ms]" />
+      <span className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce [animation-delay:300ms]" />
     </div>
   );
 }
