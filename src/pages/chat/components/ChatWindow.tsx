@@ -40,11 +40,50 @@ export default function ChatWindow() {
     mutationFn: ({ data, chatId }: { data: CreateMessage; chatId: string }) =>
       chatService.sendMessage(data, chatId),
 
+    onMutate: async ({ data, chatId }) => {
+      await queryClient.cancelQueries({ queryKey: ["messages", chatId] });
+
+      const previousMessages = queryClient.getQueryData(["messages", chatId]);
+
+      const optimisticUserMessage = {
+        id: `temp-user-${Date.now()}`,
+        content: data.content,
+        role: "user",
+        created_at: new Date().toISOString(),
+        optimistic: true,
+      };
+
+      const thinkingMessage = {
+        id: `temp-ai-${Date.now()}`,
+        content: "",
+        role: "assistant",
+        created_at: new Date().toISOString(),
+        thinking: true,
+      };
+
+      queryClient.setQueryData(["messages", chatId], (old: any[] = []) => [
+        ...old,
+        optimisticUserMessage,
+        thinkingMessage,
+      ]);
+
+      return { previousMessages };
+    },
+
     onSuccess: (newMessage, variables) => {
       queryClient.setQueryData(
         ["messages", variables.chatId],
-        (old: any[] = []) => [...old, newMessage],
+        (old: any[] = []) => old.map((m) => (m.thinking ? newMessage : m)),
       );
+    },
+
+    onError: (_, __, context) => {
+      if (context?.previousMessages) {
+        queryClient.setQueryData(
+          ["messages", chatId],
+          context.previousMessages,
+        );
+      }
     },
   });
 
