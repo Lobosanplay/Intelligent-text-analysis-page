@@ -42,10 +42,6 @@ const routes = [
               { path: ":chatId", element: <ChatPage /> },
             ],
           },
-          {
-            path: "folders",
-            element: <div>Folders</div>,
-          },
         ],
       },
     ],
