@@ -69,7 +69,9 @@ export default function Register() {
     >
       <div className="bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_0_80px_rgba(139,92,246,0.15)] p-8 rounded-2xl flex flex-col">
         <div className="mb-6 text-center">
-          <h2 className="text-3xl font-bold text-white">Create account</h2>
+          <h2 className="text-2xl lg:text-3xl font-bold text-white">
+            Create account
+          </h2>
           <p className="text-neutral-400 mt-2 text-sm">
             Sign up to start using the platform
           </p>
