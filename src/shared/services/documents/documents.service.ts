@@ -1,5 +1,8 @@
 import supabase from "../../../config/supabase/supabase";
-import type { SB_DocumentModel } from "../../models/documents/documents.model";
+import type {
+  SB_DocumentModel,
+  DocumentModalModel,
+} from "../../models/documents/documents.model";
 
 class DocumentsService {
   async create(data: Partial<SB_DocumentModel>) {
@@ -93,6 +96,23 @@ class DocumentsService {
 
   async delete(id: string) {
     const { error } = await supabase.from("documents").delete().eq("id", id);
+
+    if (error) throw error;
+  }
+
+  async getDocumentFullData(id: string) {
+    const { data, error } = await supabase.rpc("get_document_full_data", {
+      p_document_id: id,
+    });
+
+    if (error) throw error;
+    return data as DocumentModalModel;
+  }
+
+  async deleteDocumentFull(id: string) {
+    const { error } = await supabase.rpc("delete_document_full", {
+      p_document_id: id,
+    });
 
     if (error) throw error;
   }

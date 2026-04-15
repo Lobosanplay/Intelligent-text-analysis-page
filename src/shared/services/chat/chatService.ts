@@ -6,6 +6,7 @@ import type {
   Message,
   MessageAPIResponse,
 } from "../../models/messages/messages.model";
+import supabase from "../../../config/supabase/supabase";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -76,7 +77,6 @@ class ChatServices {
       }
 
       const json = await response.json();
-      console.log(json);
       return json;
     } catch (error) {
       console.error("Error generating create conversations:", error);
@@ -126,6 +126,20 @@ class ChatServices {
       return json;
     } catch (error) {
       console.error("Error generating create conversations:", error);
+      throw error;
+    }
+  }
+
+  async changeChatName(chatId: string, newName: string) {
+    try {
+      const response = supabase
+        .from("conversations")
+        .update({ title: newName })
+        .eq("id", chatId);
+
+      return response;
+    } catch (error) {
+      console.error("Error change Name of the conversations", error);
       throw error;
     }
   }

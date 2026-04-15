@@ -33,7 +33,7 @@ export default function DashboardLayout() {
           className={`
               fixed z-100 p-2 rounded-lg transition bg-neutral-900/80 backdrop-blur hover:bg-neutral-800
               lg:top-1
-              ${mobileOpen ? "top-5 right-4" : "top-5 lg:left-0 left-4"}
+              ${mobileOpen ? "top-4 right-4" : "top-1 lg:left-0 left-5"}
               ${collapsed ? "lg:left-5" : "lg:left-50 lg:top-5"}
             `}
         >
