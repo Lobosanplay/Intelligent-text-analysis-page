@@ -69,7 +69,7 @@ export default function MessageBubble({ message }: Props) {
 
             {analysis.summary && (
               <div>
-                <span className="font-semibold text-neutral-400">Resumen:</span>
+                <span className="font-semibold text-neutral-400">Summary:</span>
                 <p className="text-neutral-300">{analysis.summary}</p>
               </div>
             )}
@@ -77,15 +77,15 @@ export default function MessageBubble({ message }: Props) {
             {analysis.sentiment && (
               <div className="flex flex-col gap-2">
                 <span className="font-semibold text-neutral-400">
-                  Sentimiento:
+                  Sentiment:
                 </span>
                 <p>
-                  {analysis.sentiment.overall === "POSITIVE" && "😊 Positivo"}
-                  {analysis.sentiment.overall === "NEGATIVE" && "😟 Negativo"}
+                  {analysis.sentiment.overall === "POSITIVE" && "😊 Positive"}
+                  {analysis.sentiment.overall === "NEGATIVE" && "😟 Negative"}
                   {analysis.sentiment.overall === "NEUTRAL" && "😐 Neutral"}
                 </p>
                 <p className="text-neutral-400 text-[11px]">
-                  Positivos: {analysis.sentiment.positive_chunks} | Negativos:{" "}
+                  Positive: {analysis.sentiment.positive_chunks} | Negative:{" "}
                   {analysis.sentiment.negative_chunks}
                 </p>
               </div>
@@ -94,7 +94,7 @@ export default function MessageBubble({ message }: Props) {
             {analysis.topics && analysis.topics.length > 0 && (
               <div>
                 <span className="font-semibold text-neutral-400">
-                  Temas clave:
+                  key themes:
                 </span>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {analysis.topics

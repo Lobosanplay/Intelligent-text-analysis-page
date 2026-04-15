@@ -3,15 +3,14 @@ import {
   LayoutDashboard,
   Search,
   Plus,
-  Folder,
   MoreHorizontal,
   LogOut,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../../shared/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { chatService } from "../../../../shared/services/chat/chatService";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 
 type Props = {
@@ -28,11 +27,21 @@ export default function Sidebar({
   isMobile,
 }: Props) {
   const [openMenu, setOpenMenu] = useState(false);
-  const { username, signOut, plan_id, user } = useAuth();
-  const navigate = useNavigate();
+  const [activeChatMenu, setActiveChatMenu] = useState<string | null>(null);
+  const [editingChatId, setEditingChatId] = useState<string | null>(null);
+  const [editingValue, setEditingValue] = useState("");
 
+  const { username, signOut, plan_id, user } = useAuth();
+
+  const chatMenuRef = useRef<HTMLDivElement | null>(null);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
+
+  const navigate = useNavigate();
   const location = useLocation();
 
+  const queryClient = useQueryClient();
+
+  const currentChatId = location.pathname.split("/chat/")[1];
   const showLabels = isMobile ? mobileOpen : !collapsed;
 
   useEffect(() => {
@@ -45,16 +54,101 @@ export default function Sidebar({
     queryKey: ["chats"],
   });
 
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "F2") {
+        const selected = data?.find((i) => i.id === currentChatId);
+        if (selected) {
+          setEditingChatId(selected.id);
+          setEditingValue(selected.title);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [data, currentChatId]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+
+      if (
+        activeChatMenu &&
+        chatMenuRef.current &&
+        !chatMenuRef.current.contains(target)
+      ) {
+        setActiveChatMenu(null);
+      }
+
+      if (
+        openMenu &&
+        userMenuRef.current &&
+        !userMenuRef.current.contains(target)
+      ) {
+        setOpenMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [activeChatMenu, openMenu]);
+
   const navItemBase =
     "flex items-center rounded-lg transition-colors text-neutral-400 hover:bg-neutral-900";
-
   const navItemSpacing = showLabels ? "gap-3 px-4 py-3" : "justify-center p-3";
+
+  const handleRename = (chat: any) => {
+    setEditingChatId(chat.id);
+    setEditingValue(chat.title);
+    setActiveChatMenu(null);
+  };
+
+  const handleSaveRename = (id: string) => {
+    renameMutation.mutate({ id, title: editingValue });
+    setEditingChatId(null);
+  };
+
+  const renameMutation = useMutation({
+    mutationFn: ({ id, title }: { id: string; title: string }) =>
+      chatService.changeChatName(id, title),
+
+    onMutate: async ({ id, title }) => {
+      await queryClient.cancelQueries(["chats"]);
+
+      const previousChats = queryClient.getQueryData<any[]>(["chats"]);
+
+      queryClient.setQueryData(["chats"], (old: any[] = []) =>
+        old.map((chat) => (chat.id === id ? { ...chat, title } : chat)),
+      );
+
+      return { previousChats };
+    },
+
+    onError: (_err, _vars, context) => {
+      if (context?.previousChats) {
+        queryClient.setQueryData(["chats"], context.previousChats);
+      }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries(["chats"]);
+    },
+  });
+
+  const handleDelete = async (id: string) => {
+    await chatService.deletedConversations(id);
+    setActiveChatMenu(null);
+  };
 
   return (
     <aside
       className={`
           fixed top-0 left-0 h-screen z-50 bg-black border-r border-neutral-800 flex flex-col transition-all duration-300
-          ${collapsed ? "lg:w-20" : "lg:w-64"} w-full
+          ${isMobile ? "w-full" : collapsed ? "w-20" : "w-64"}
           ${
             isMobile
               ? mobileOpen
@@ -99,18 +193,6 @@ export default function Sidebar({
           <Search size={18} />
           {showLabels && "Search Chats"}
         </button>
-
-        <NavLink
-          to="/dashboard/folders"
-          className={({ isActive }) =>
-            `${navItemBase} ${navItemSpacing} ${
-              isActive ? "bg-neutral-800 text-white" : ""
-            }`
-          }
-        >
-          <Folder size={18} />
-          {showLabels && "Folders"}
-        </NavLink>
       </nav>
 
       {showLabels && (
@@ -125,13 +207,63 @@ export default function Sidebar({
             ) : (
               <div className="flex flex-col gap-1 transition-opacity duration-300 opacity-100">
                 {data.map((chat) => (
-                  <Link
+                  <div
                     key={chat.id}
-                    to={`chat/${chat.id}`}
-                    className="text-left text-sm text-neutral-400 hover:bg-neutral-900 px-3 py-2 rounded-md"
+                    className="group flex items-center justify-between px-3 py-2 rounded-md hover:bg-neutral-900"
                   >
-                    {chat.title}
-                  </Link>
+                    {editingChatId === chat.id ? (
+                      <input
+                        autoFocus
+                        value={editingValue}
+                        onChange={(e) => setEditingValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleSaveRename(chat.id);
+                          if (e.key === "Escape") setEditingChatId(null);
+                        }}
+                        className="bg-transparent text-sm text-white outline-none w-full"
+                      />
+                    ) : (
+                      <Link
+                        to={`chat/${chat.id}`}
+                        className="text-sm text-neutral-400 truncate"
+                      >
+                        {chat.title}
+                      </Link>
+                    )}
+
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setActiveChatMenu((prev) =>
+                          prev === chat.id ? null : chat.id,
+                        );
+                      }}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-neutral-800 rounded"
+                    >
+                      <MoreHorizontal size={16} />
+                    </button>
+
+                    {activeChatMenu === chat.id && (
+                      <div
+                        ref={chatMenuRef}
+                        className="absolute top-7 right-2 mt-2 w-32 bg-neutral-900 border border-neutral-800 rounded-md shadow-lg z-50"
+                      >
+                        <button
+                          onClick={() => handleRename(chat)}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-neutral-800"
+                        >
+                          Rename
+                        </button>
+                        <button
+                          onClick={() => handleDelete(chat.id)}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-neutral-800 text-red-400"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
@@ -148,7 +280,10 @@ export default function Sidebar({
             </div>
 
             <button
-              onClick={() => setOpenMenu(!openMenu)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenMenu((prev) => !prev);
+              }}
               className="p-2 hover:bg-neutral-800 rounded-full"
             >
               <MoreHorizontal size={18} />
@@ -156,7 +291,10 @@ export default function Sidebar({
           </div>
         ) : (
           <button
-            onClick={() => setOpenMenu(!openMenu)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpenMenu((prev) => !prev);
+            }}
             className="w-full flex justify-center p-2 hover:bg-neutral-800 rounded-lg"
           >
             <MoreHorizontal />
@@ -164,6 +302,7 @@ export default function Sidebar({
         )}
         {openMenu && (
           <div
+            ref={userMenuRef}
             className={`absolute w-36 bg-neutral-900 border border-neutral-800 rounded-lg shadow-lg py-1 ${collapsed ? "bottom-16 left-4" : "bottom-16 right-4"}`}
           >
             <button className="w-full text-left px-3 py-2 text-sm hover:bg-neutral-800">

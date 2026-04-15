@@ -72,7 +72,7 @@ export default function HeroBackground() {
         <div
           className="
               absolute inset-0 rounded-[100%] scale-y-[0.857] scale-x-[0.85] bottom-10
-              bg-[linear-gradient(180deg,rgba(255,255,255,0.9)_0%,rgba(255,255,255,0.35)_20%,rgba(255,255,255,0)_55%)]
+              bg-[linear-gradient(180deg,rgba(255,255,255,0.4)_0%,rgba(255,255,255,0.15)_20%,rgba(255,255,255,0)_55%)]
               opacity-full
               pointer-events-none
             "
@@ -108,6 +108,10 @@ export default function HeroBackground() {
           "
         />
       </div>
+      <div
+        className="absolute bottom-0 left-0 w-full h-40
+        bg-linear-to-b from-transparent to-black pointer-events-none z-20"
+      />
     </div>
   );
 }
