@@ -18,6 +18,7 @@ type Props = {
   mobileOpen: boolean;
   setMobileOpen: (v: boolean) => void;
   isMobile: boolean;
+  setSearchOpen: (v: boolean) => void;
 };
 
 export default function Sidebar({
@@ -25,6 +26,7 @@ export default function Sidebar({
   setMobileOpen,
   mobileOpen,
   isMobile,
+  setSearchOpen,
 }: Props) {
   const [openMenu, setOpenMenu] = useState(false);
   const [activeChatMenu, setActiveChatMenu] = useState<string | null>(null);
@@ -189,7 +191,10 @@ export default function Sidebar({
           {showLabels && "New Chat"}
         </NavLink>
 
-        <button className="flex items-center gap-3 px-4 py-3 rounded-lg text-neutral-400 hover:bg-neutral-900 transition-colors">
+        <button
+          onClick={() => setSearchOpen(true)}
+          className="flex items-center gap-3 px-4 py-3 rounded-lg text-neutral-400 hover:bg-neutral-900 transition-colors"
+        >
           <Search size={18} />
           {showLabels && "Search Chats"}
         </button>
