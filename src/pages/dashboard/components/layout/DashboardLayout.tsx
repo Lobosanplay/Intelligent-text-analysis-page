@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../sidebar/Sidebar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { chatService } from "../../../../shared/services/chat/chatService";
 import { useAuth } from "../../../../shared/hooks/useAuth";
@@ -13,6 +13,8 @@ export default function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  const searchModelRef = useRef<HTMLDivElement | null>(null);
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -41,6 +43,26 @@ export default function DashboardLayout() {
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+
+      if (
+        searchOpen &&
+        searchModelRef.current &&
+        !searchModelRef.current.contains(target)
+      ) {
+        setSearchOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [searchOpen]);
 
   const { data = [] } = useQuery({
     queryFn: async () =>
@@ -82,6 +104,7 @@ export default function DashboardLayout() {
           onClose={() => setSearchOpen(false)}
           chats={data}
           onSelect={(id) => navigate(`/dashboard/chat/${id}`)}
+          searchRef={searchModelRef}
         />
       )}
 

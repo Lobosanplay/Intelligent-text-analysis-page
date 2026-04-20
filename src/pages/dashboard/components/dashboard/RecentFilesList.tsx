@@ -1,18 +1,23 @@
-import { useRecentDocuments } from "../../../../shared/services/documents/documents.queries";
+import {
+  useRecentDocuments,
+  useDeleteFile,
+} from "../../../../shared/services/documents/documents.queries";
 import { useAuth } from "../../../../shared/hooks/useAuth";
 import { Trash2, SquareArrowOutUpRight, XIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import type { DocumentModalModel } from "../../../../shared/models/documents/documents.model";
+import type {
+  DocumentModalModel,
+  RecentDocument,
+} from "../../../../shared/models/documents/documents.model";
 import { documentsService } from "../../../../shared/services/documents/documents.service";
-import { useQueryClient } from "@tanstack/react-query";
 
 export default function RecentFilesList() {
   const [openModal, setOpenModal] = useState(false);
   const [modalData, setModalData] = useState<DocumentModalModel>();
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  const queryClient = useQueryClient();
+  const { mutateAsync: deleteFile, isPending } = useDeleteFile();
 
   const { user } = useAuth();
   const {
@@ -39,7 +44,7 @@ export default function RecentFilesList() {
     };
   }, [openModal]);
 
-  const handleOpen = async (file: any) => {
+  const handleOpen = async (file: RecentDocument) => {
     const data = await documentsService.getDocumentFullData(file.id);
     if (data.conversation_id) {
       navigate(`/dashboard/chat/${data.conversation_id}`);
@@ -50,9 +55,7 @@ export default function RecentFilesList() {
   };
 
   const handleDelete = async (id: string) => {
-    await documentsService.deleteDocumentFull(id);
-
-    queryClient.invalidateQueries(["recent-documents"]);
+    await deleteFile(id);
   };
 
   if (isLoading) {
@@ -108,6 +111,7 @@ export default function RecentFilesList() {
               </button>
               <button
                 onClick={() => handleDelete(file.id)}
+                disabled={isPending}
                 className="p-1 hover:bg-neutral-800 rounded text-red-400"
               >
                 <Trash2 />
@@ -117,10 +121,10 @@ export default function RecentFilesList() {
         ))}
 
         {openModal && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-100">
+          <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6">
             <div
               ref={modalRef}
-              className="relative bg-neutral-900 p-6 rounded-xl max-w-4xl w-full"
+              className="relative bg-neutral-900 rounded-xl w-[95vw] sm:w-full max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 mx-3"
             >
               <h2 className="text-lg font-semibold mb-4">
                 {modalData?.document.original_filename}

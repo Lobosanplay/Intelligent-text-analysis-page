@@ -105,7 +105,7 @@ class ChatServices {
   async sendMessage(
     data: CreateMessage,
     chatId: string,
-  ): Promise<SB_MessagesModel> {
+  ): Promise<ResponseNewChatModel> {
     try {
       const formData = new FormData();
       formData.append("user_id", data.user_id);

@@ -22,16 +22,6 @@ export default function MessageBubble({ message }: Props) {
   const analysis = message.analysis;
   const document = message.document;
 
-  if ((message as any).thinking) {
-    return (
-      <div className="flex justify-start">
-        <div className="bg-neutral-800 px-4 py-3 rounded-lg">
-          <TypingDots />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
@@ -64,6 +54,12 @@ export default function MessageBubble({ message }: Props) {
               <div>
                 <span className="font-semibold text-neutral-400">Title:</span>
                 <p className="font-bold text-lg">{document.filename}</p>
+              </div>
+            )}
+            {message.content?.trim() && (
+              <div>
+                <span className="font-semibold text-neutral-400">Answer:</span>
+                <p className="text-neutral-300">{message.content}</p>
               </div>
             )}
 
@@ -128,10 +124,10 @@ export default function MessageBubble({ message }: Props) {
             )}
           </div>
         )}
-        {message.role === "assistant" && (
+        {message.role === "assistant" && analysis && (
           <div className="flex justify-end mt-2">
             <button
-              onClick={() => copy(message.content!)}
+              onClick={() => copy(analysis.summary!)}
               className="flex items-center gap-1 text-xs text-neutral-400 hover:text-white transition"
             >
               {copied ? <Check size={14} /> : <Copy size={14} />}
@@ -140,16 +136,6 @@ export default function MessageBubble({ message }: Props) {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function TypingDots() {
-  return (
-    <div className="flex gap-1">
-      <span className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce [animation-delay:0ms]" />
-      <span className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce [animation-delay:150ms]" />
-      <span className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce [animation-delay:300ms]" />
     </div>
   );
 }

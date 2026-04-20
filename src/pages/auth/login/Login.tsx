@@ -86,9 +86,9 @@ export default function Login() {
           <button
             disabled={isLoading}
             type="submit"
-            className="mt-2 w-full bg-purple-600 hover:bg-purple-500 transition text-white py-3 rounded-md font-semibold"
+            className="mt-2 w-full bg-purple-600 hover:bg-purple-500 cursor-pointer transition text-white py-3 rounded-md font-semibold"
           >
-            {isLoading ? "Validando..." : "Login"}
+            {isLoading ? "validating..." : "Login"}
           </button>
         </form>
 
@@ -100,7 +100,7 @@ export default function Login() {
 
         <button
           disabled
-          className="w-full border border-neutral-700 text-white py-3 rounded-md hover:bg-neutral-800 transition"
+          className="w-full cursor-not-allowed border border-neutral-700 text-white py-3 rounded-md hover:bg-neutral-800 transition"
         >
           Continue with Google
         </button>

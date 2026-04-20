@@ -17,7 +17,7 @@ export interface Sentiment {
 export interface ResponseNewChatModel {
   message_id: string;
   status: string;
-  message: SB_MessagesModel;
+  message_response: SB_MessagesModel;
 }
 
 export interface Message {

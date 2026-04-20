@@ -1,17 +1,22 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useParams } from "react-router-dom";
 import {
   LayoutDashboard,
   Search,
   Plus,
   MoreHorizontal,
   LogOut,
+  UserCircle2Icon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../../shared/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { chatService } from "../../../../shared/services/chat/chatService";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useDeleteChat,
+  useChats,
+  useRenameChat,
+} from "../../../../shared/services/chat/chat.queries";
 import { useLocation } from "react-router-dom";
+import type { SB_ConversationsModel } from "../../../../shared/models/conversations/conversations.model";
 
 type Props = {
   collapsed: boolean;
@@ -40,26 +45,22 @@ export default function Sidebar({
 
   const navigate = useNavigate();
   const location = useLocation();
+  const { chatId } = useParams();
 
-  const queryClient = useQueryClient();
-
-  const currentChatId = location.pathname.split("/chat/")[1];
   const showLabels = isMobile ? mobileOpen : !collapsed;
+
+  const { data = [], isLoading } = useChats(user?.id || "");
+  const renameMutation = useRenameChat();
+  const deleteMutation = useDeleteChat();
 
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname, setMobileOpen]);
 
-  const { data = [], isLoading } = useQuery({
-    queryFn: async () =>
-      await chatService.fetchConversationServiceByUserId(user?.id || ""),
-    queryKey: ["chats"],
-  });
-
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "F2") {
-        const selected = data?.find((i) => i.id === currentChatId);
+        const selected = data?.find((i) => i.id === chatId);
         if (selected) {
           setEditingChatId(selected.id);
           setEditingValue(selected.title);
@@ -69,7 +70,7 @@ export default function Sidebar({
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [data, currentChatId]);
+  }, [data, chatId]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -103,7 +104,7 @@ export default function Sidebar({
     "flex items-center rounded-lg transition-colors text-neutral-400 hover:bg-neutral-900";
   const navItemSpacing = showLabels ? "gap-3 px-4 py-3" : "justify-center p-3";
 
-  const handleRename = (chat: any) => {
+  const handleRename = (chat: SB_ConversationsModel) => {
     setEditingChatId(chat.id);
     setEditingValue(chat.title);
     setActiveChatMenu(null);
@@ -114,35 +115,8 @@ export default function Sidebar({
     setEditingChatId(null);
   };
 
-  const renameMutation = useMutation({
-    mutationFn: ({ id, title }: { id: string; title: string }) =>
-      chatService.changeChatName(id, title),
-
-    onMutate: async ({ id, title }) => {
-      await queryClient.cancelQueries(["chats"]);
-
-      const previousChats = queryClient.getQueryData<any[]>(["chats"]);
-
-      queryClient.setQueryData(["chats"], (old: any[] = []) =>
-        old.map((chat) => (chat.id === id ? { ...chat, title } : chat)),
-      );
-
-      return { previousChats };
-    },
-
-    onError: (_err, _vars, context) => {
-      if (context?.previousChats) {
-        queryClient.setQueryData(["chats"], context.previousChats);
-      }
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries(["chats"]);
-    },
-  });
-
   const handleDelete = async (id: string) => {
-    await chatService.deletedConversations(id);
+    deleteMutation.mutateAsync(id);
     setActiveChatMenu(null);
   };
 
@@ -279,9 +253,12 @@ export default function Sidebar({
       <div className="p-4 border-t border-neutral-800 relative mt-auto">
         {showLabels ? (
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium">{username}</p>
-              <p className="text-xs text-neutral-500">{plan_id} plan</p>
+            <div className="flex items-center gap-2">
+              <UserCircle2Icon />
+              <div>
+                <p className="text-sm font-medium">{username}</p>
+                <p className="text-xs text-neutral-500">{plan_id} plan</p>
+              </div>
             </div>
 
             <button

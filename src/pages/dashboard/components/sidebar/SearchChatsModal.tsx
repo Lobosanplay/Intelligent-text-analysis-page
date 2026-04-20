@@ -6,6 +6,7 @@ type Props = {
   onClose: () => void;
   chats: any[];
   onSelect: (id: string) => void;
+  searchRef: any;
 };
 
 export default function SearchChatsModal({
@@ -13,6 +14,7 @@ export default function SearchChatsModal({
   onClose,
   chats,
   onSelect,
+  searchRef,
 }: Props) {
   const [query, setQuery] = useState("");
 
@@ -23,8 +25,11 @@ export default function SearchChatsModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-start justify-center pt-32 z-50">
-      <div className="relative w-full max-w-xl bg-neutral-900 border border-neutral-800 rounded-xl shadow-xl">
+    <div className="fixed inset-0 flex items-start justify-center pt-32 z-10">
+      <div
+        ref={searchRef}
+        className="relative w-full max-w-xl mx-5 lg:mx-0 bg-neutral-900 border border-neutral-800 rounded-xl shadow-xl"
+      >
         <XIcon
           onClick={() => {
             setQuery("");
@@ -40,7 +45,7 @@ export default function SearchChatsModal({
           className="w-full px-4 py-3 bg-transparent outline-none border-b border-neutral-800 text-white"
         />
 
-        <div className="flex max-h-80 p-2 overflow-y-auto">
+        <div className="flex flex-col max-h-80 p-2 overflow-y-auto">
           {filtered.length === 0 ? (
             <p className="p-4 text-sm text-neutral-500">No results</p>
           ) : (
