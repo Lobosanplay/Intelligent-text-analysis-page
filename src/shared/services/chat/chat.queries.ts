@@ -4,7 +4,6 @@ import type { SB_ConversationsModel } from "../../models/conversations/conversat
 import type {
   Message,
   ResponseNewChatModel,
-  SB_MessagesModel,
 } from "../../models/messages/messages.model";
 import { mapMessageFromAPI } from "../../models/messages/mappers/message.mapper";
 

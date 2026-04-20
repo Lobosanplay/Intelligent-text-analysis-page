@@ -15,13 +15,7 @@ export default function ChatInput({ onSend }: Props) {
 
   const [filePreview, setFilePreview] = useState<File | null>(null);
 
-  const {
-    setValue,
-    reset,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<chatInputType>({
+  const { setValue, reset, register, handleSubmit } = useForm<chatInputType>({
     resolver: zodResolver(chatInputSchema),
     defaultValues: {
       content: "",
