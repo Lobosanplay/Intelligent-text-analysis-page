@@ -11,6 +11,18 @@ export interface SB_DocumentModel {
   status: string;
 }
 
+export interface RecentDocument {
+  id: string;
+  name: string | null;
+  created_at: string;
+  type: string | null;
+}
+
+export type UploadedDocumentLastDays = {
+  day: string;
+  total: number;
+};
+
 export interface DocumentModalModel {
   document: {
     id: string;

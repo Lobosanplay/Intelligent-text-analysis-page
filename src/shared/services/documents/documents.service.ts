@@ -2,6 +2,7 @@ import supabase from "../../../config/supabase/supabase";
 import type {
   SB_DocumentModel,
   DocumentModalModel,
+  UploadedDocumentLastDays,
 } from "../../models/documents/documents.model";
 
 class DocumentsService {
@@ -71,7 +72,10 @@ class DocumentsService {
     return data;
   }
 
-  async getDocumentsLastDays(userId: string, limint: number = 7) {
+  async getDocumentsLastDays(
+    userId: string,
+    limint: number = 7,
+  ): Promise<UploadedDocumentLastDays[]> {
     const { data, error } = await supabase.rpc("documents_last_days", {
       p_user_id: userId,
       p_days: limint,
@@ -110,6 +114,16 @@ class DocumentsService {
   }
 
   async deleteDocumentFull(id: string) {
+    const doc = await this.getById(id);
+
+    if (doc.storage_path) {
+      const { error: storageError } = await supabase.storage
+        .from("documents")
+        .remove([doc.storage_path]);
+
+      if (storageError) throw storageError;
+    }
+
     const { error } = await supabase.rpc("delete_document_full", {
       p_document_id: id,
     });

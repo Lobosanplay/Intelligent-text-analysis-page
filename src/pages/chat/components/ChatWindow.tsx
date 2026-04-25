@@ -2,98 +2,35 @@ import { useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
 import MessageBubble from "./MessageBubble";
 import { useParams } from "react-router-dom";
-import {
-  chatService,
-  type CreateMessage,
-} from "../../../shared/services/chat/chatService";
+import { type CreateMessage } from "../../../shared/services/chat/chatService";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../../shared/hooks/useAuth";
+import {
+  useCreateChat,
+  useMessage,
+  useSendMessageChat,
+} from "../../../shared/services/chat/chat.queries";
 
 export default function ChatWindow() {
   const { chatId } = useParams();
   const { username } = useAuth();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+
+  const { data: messages = [] } = useMessage(chatId ?? "");
+  const createChat = useCreateChat(navigate);
+  const sendMessage = useSendMessageChat();
 
   const isNewChat = chatId === undefined;
 
-  const { data: messages = [] } = useQuery({
-    queryFn: async () => await chatService.fetchConversationById(chatId || ""),
-    queryKey: ["messages", chatId],
-    enabled: !!chatId,
-  });
-
   const hasMessages = messages.length > 0;
 
-  const { mutateAsync: createChatMutation } = useMutation({
-    mutationFn: (data: CreateMessage) => chatService.createChatService(data),
-
-    onSuccess: (newMessage) => {
-      const newChatId = newMessage.message.conversation_id;
-      queryClient.invalidateQueries({ queryKey: ["chats"] });
-      navigate(`/dashboard/chat/${newChatId}`);
-    },
-  });
-
-  const { mutateAsync: sendMessageMutation } = useMutation({
-    mutationFn: ({ data, chatId }: { data: CreateMessage; chatId: string }) =>
-      chatService.sendMessage(data, chatId),
-
-    onMutate: async ({ data, chatId }) => {
-      await queryClient.cancelQueries({ queryKey: ["messages", chatId] });
-
-      const previousMessages = queryClient.getQueryData(["messages", chatId]);
-
-      const optimisticUserMessage = {
-        id: `temp-user-${Date.now()}`,
-        content: data.content,
-        role: "user",
-        created_at: new Date().toISOString(),
-        optimistic: true,
-      };
-
-      const thinkingMessage = {
-        id: `temp-ai-${Date.now()}`,
-        content: "",
-        role: "assistant",
-        created_at: new Date().toISOString(),
-        thinking: true,
-      };
-
-      queryClient.setQueryData(["messages", chatId], (old: any[] = []) => [
-        ...old,
-        optimisticUserMessage,
-        thinkingMessage,
-      ]);
-
-      return { previousMessages };
-    },
-
-    onSuccess: (newMessage, variables) => {
-      queryClient.setQueryData(
-        ["messages", variables.chatId],
-        (old: any[] = []) => old.map((m) => (m.thinking ? newMessage : m)),
-      );
-    },
-
-    onError: (_, __, context) => {
-      if (context?.previousMessages) {
-        queryClient.setQueryData(
-          ["messages", chatId],
-          context.previousMessages,
-        );
-      }
-    },
-  });
-
-  const sendMessage = async (data: CreateMessage) => {
+  const handleSendMessage = async (data: CreateMessage) => {
     if (isNewChat) {
-      await createChatMutation(data);
+      await createChat.mutateAsync(data);
       return;
     }
 
-    await sendMessageMutation({
+    await sendMessage.mutateAsync({
       data,
       chatId: chatId!,
     });
@@ -129,7 +66,7 @@ export default function ChatWindow() {
       )}
 
       <div className="relative w-full">
-        <ChatInput onSend={sendMessage} />
+        <ChatInput onSend={handleSendMessage} />
       </div>
     </div>
   );

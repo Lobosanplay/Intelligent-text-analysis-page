@@ -50,11 +50,11 @@ export default function AuthLayout({ children, title, subtitle }: Props) {
         </div>
 
         <div className="flex items-center justify-center px-6 pb-12 lg:pb-0 lg:px-16 lg:col-span-4">
-          <div className="w-full max-w-md">{children}</div>
+          <div className="w-full max-w-lg">{children}</div>
         </div>
 
-        <div className="absolute left-[10%] top-[20%] w-72 h-72 md:w-96 md:h-96 bg-purple-500/20 blur-[100px] md:blur-[140px] rounded-full opacity-50" />
-        <div className="absolute left-[5%] bottom-[10%] w-64 h-64 md:w-80 md:h-80 bg-blue-500/20 blur-[80px] md:blur-[120px] rounded-full opacity-40" />
+        <div className="absolute pointer-events-none left-[10%] top-[20%] w-72 h-72 md:w-96 md:h-96 bg-purple-500/20 blur-[100px] md:blur-[140px] rounded-full opacity-50" />
+        <div className="absolute pointer-events-none left-[5%] bottom-[10%] w-64 h-64 md:w-80 md:h-80 bg-blue-500/20 blur-[80px] md:blur-[120px] rounded-full opacity-40" />
       </div>
     </section>
   );
