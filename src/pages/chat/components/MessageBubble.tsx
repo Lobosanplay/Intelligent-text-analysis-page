@@ -37,7 +37,13 @@ function Markdown({ children }: { children: string }) {
           <ol className="list-decimal ml-5 mb-2 space-y-1">{children}</ol>
         ),
         li: ({ children }) => <li>{children}</li>,
-        code: ({ inline, children }) =>
+        code: ({
+          inline,
+          children,
+        }: {
+          inline?: boolean;
+          children?: React.ReactNode;
+        }) =>
           inline ? (
             <code className="bg-neutral-200 text-black px-1 rounded text-xs">
               {children}
