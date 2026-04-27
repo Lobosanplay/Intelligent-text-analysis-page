@@ -73,7 +73,7 @@ export default function DashboardLayout() {
   const showSidebar = isMobile ? mobileOpen : !collapsed;
 
   return (
-    <div className="flex h-screen bg-black text-white">
+    <div className="flex h-screen bg-black/97 text-white">
       <button
         onClick={() =>
           isMobile

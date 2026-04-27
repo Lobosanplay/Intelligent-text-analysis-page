@@ -1,7 +1,8 @@
 import { FileText, Image, FileAudio, Check, Copy } from "lucide-react";
 import type { Message } from "../../../shared/models/messages/messages.model";
-import { TranscriptBlock } from "../../../shared/components/TranscriptBlock";
 import { useCopy } from "../../../shared/hooks/copyHook";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type Props = {
   message: Message;
@@ -9,11 +10,94 @@ type Props = {
 
 function getFileIcon(type?: string) {
   if (!type) return <FileText size={14} />;
-
   if (type.includes("image")) return <Image size={14} />;
   if (type.includes("audio")) return <FileAudio size={14} />;
-
   return <FileText size={14} />;
+}
+
+function Markdown({ children }: { children: string }) {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        p: ({ children }) => <p className="mb-2 leading-relaxed">{children}</p>,
+        h1: ({ children }) => (
+          <h1 className="text-lg font-semibold mb-2">{children}</h1>
+        ),
+        h2: ({ children }) => (
+          <h2 className="text-base font-semibold mb-2">{children}</h2>
+        ),
+        h3: ({ children }) => (
+          <h3 className="text-sm font-semibold mb-1">{children}</h3>
+        ),
+        ul: ({ children }) => (
+          <ul className="list-disc ml-5 mb-2 space-y-1">{children}</ul>
+        ),
+        ol: ({ children }) => (
+          <ol className="list-decimal ml-5 mb-2 space-y-1">{children}</ol>
+        ),
+        li: ({ children }) => <li>{children}</li>,
+        code: ({
+          inline,
+          children,
+        }: {
+          inline?: boolean;
+          children?: React.ReactNode;
+        }) =>
+          inline ? (
+            <code className="bg-neutral-200 text-black px-1 rounded text-xs">
+              {children}
+            </code>
+          ) : (
+            <pre className="bg-neutral-900 text-white p-3 rounded-lg overflow-x-auto text-xs mb-3">
+              <code>{children}</code>
+            </pre>
+          ),
+      }}
+    >
+      {children}
+    </ReactMarkdown>
+  );
+}
+
+function buildMarkdown(message: Message): string {
+  const parts: string[] = [];
+
+  if (message.document?.filename)
+    parts.push(`# Title: ${message.document.filename}`);
+
+  if (message.content)
+    parts.push(`## Answer
+${message.content}`);
+
+  if (message.analysis?.summary) {
+    parts.push(`## Summary\n${message.analysis.summary}`);
+  }
+
+  if (message.analysis?.sentiment) {
+    const s = message.analysis.sentiment;
+    parts.push(
+      `## Sentiment
+- Overall: ${s.overall}
+- Positive: ${s.positive_chunks}
+- Negative: ${s.negative_chunks}`,
+    );
+  }
+
+  if (message.analysis?.topics?.length) {
+    parts.push(
+      `## Topics\n${message.analysis.topics
+        .flat()
+        .map((t) => `- ${t}`)
+        .join("\n")}`,
+    );
+  }
+
+  if (message.analysis?.transcript) {
+    parts.push(`## Transcript\n${message.analysis.transcript}`);
+  }
+
+  return parts.join("\n\n");
 }
 
 export default function MessageBubble({ message }: Props) {
@@ -28,7 +112,7 @@ export default function MessageBubble({ message }: Props) {
         className={`px-4 py-3 rounded-lg text-sm text-start ${
           isUser
             ? "max-w-[70%] bg-blue-600 text-white"
-            : "w-full bg-neutral-800 text-neutral-200"
+            : "w-full bg-transparent text-neutral-200"
         }`}
       >
         {isUser && (
@@ -42,64 +126,59 @@ export default function MessageBubble({ message }: Props) {
               </div>
             )}
 
-            {message.content && <p>{message.content}</p>}
+            {message.content && <Markdown>{message.content}</Markdown>}
           </div>
         )}
 
-        {!analysis && !isUser && <span>{message.content}</span>}
+        {!analysis && !isUser && message.content && (
+          <Markdown>{message.content}</Markdown>
+        )}
 
         {!isUser && analysis && document && (
-          <div className="space-y-2 pt-2 text-xs">
+          <div className="space-y-4 pt-2 text-sm">
             {document.filename && (
               <div>
-                <span className="font-semibold text-neutral-400">Title:</span>
-                <p className="font-bold text-lg">{document.filename}</p>
+                <span className="text-neutral-400 text-xs">Title</span>
+                <p className="font-semibold text-base">{document.filename}</p>
               </div>
             )}
+
             {message.content?.trim() && (
               <div>
-                <span className="font-semibold text-neutral-400">Answer:</span>
-                <p className="text-neutral-300">{message.content}</p>
+                <span className="text-neutral-400 text-xs">Answer</span>
+                <Markdown>{message.content}</Markdown>
               </div>
             )}
 
             {analysis.summary && (
               <div>
-                <span className="font-semibold text-neutral-400">Summary:</span>
-                <p className="text-neutral-300">{analysis.summary}</p>
+                <span className="text-neutral-400 text-xs">Summary</span>
+                <Markdown>{analysis.summary}</Markdown>
               </div>
             )}
 
             {analysis.sentiment && (
-              <div className="flex flex-col gap-2">
-                <span className="font-semibold text-neutral-400">
-                  Sentiment:
-                </span>
-                <p>
-                  {analysis.sentiment.overall === "POSITIVE" && "😊 Positive"}
-                  {analysis.sentiment.overall === "NEGATIVE" && "😟 Negative"}
-                  {analysis.sentiment.overall === "NEUTRAL" && "😐 Neutral"}
-                </p>
-                <p className="text-neutral-400 text-[11px]">
-                  Positive: {analysis.sentiment.positive_chunks} | Negative:{" "}
-                  {analysis.sentiment.negative_chunks}
-                </p>
+              <div>
+                <span className="text-neutral-400 text-xs">Sentiment</span>
+                <Markdown>
+                  {`- Overall: ${analysis.sentiment.overall}
+- Positive: ${analysis.sentiment.positive_chunks}
+- Negative: ${analysis.sentiment.negative_chunks}`}
+                </Markdown>
               </div>
             )}
 
             {analysis.topics && analysis.topics.length > 0 && (
               <div>
-                <span className="font-semibold text-neutral-400">
-                  key themes:
-                </span>
-                <div className="flex flex-wrap gap-1 mt-1">
+                <span className="text-neutral-400 text-xs">Key themes</span>
+                <div className="flex flex-wrap gap-2 mt-2">
                   {analysis.topics
                     .flat()
-                    .slice(0, 10)
+                    .slice(0, 12)
                     .map((topic, i) => (
                       <span
                         key={i}
-                        className="bg-neutral-700 px-2 py-1 rounded text-[11px]"
+                        className="bg-neutral-700/70 hover:bg-neutral-600 px-2 py-1 rounded-full text-xs transition"
                       >
                         {topic}
                       </span>
@@ -109,26 +188,19 @@ export default function MessageBubble({ message }: Props) {
             )}
 
             {analysis.transcript && (
-              <TranscriptBlock transcript={analysis.transcript} />
-            )}
-
-            {(analysis.duration || analysis.language) && (
-              <div className="text-neutral-400 text-[11px]">
-                {analysis.duration && (
-                  <span>Duración: {analysis.duration}s </span>
-                )}
-                {analysis.language && (
-                  <span>• Idioma: {analysis.language}</span>
-                )}
+              <div>
+                <span className="text-neutral-400 text-xs">Transcript</span>
+                <Markdown>{analysis.transcript}</Markdown>
               </div>
             )}
           </div>
         )}
+
         {message.role === "assistant" && analysis && (
-          <div className="flex justify-end mt-2">
+          <div className="flex justify-end mt-3">
             <button
-              onClick={() => copy(analysis.summary!)}
-              className="flex items-center gap-1 text-xs text-neutral-400 hover:text-white transition"
+              onClick={() => copy(buildMarkdown(message))}
+              className="flex items-center gap-1 text-xs text-neutral-500 hover:text-white transition"
             >
               {copied ? <Check size={14} /> : <Copy size={14} />}
               {copied ? "Copiado" : "Copiar"}
